@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+<div class="admin-panel-container">
+    <h1>👥 Admin Panel</h1>
+    <p class="subtitle">Manage users and permissions</p>
+
+    <!-- Add New User Section -->
+    <div class="admin-section">
+        <h2>➕ Add New User</h2>
+        <form method="POST" action="{{ url_for('dashboard.add_user') }}" class="admin-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="username">Username *</label>
+                    <input type="text" id="username" name="username" required placeholder="e.g., john_gl">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" name="password" required placeholder="Minimum 6 characters">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="role">Role *</label>
+                <select id="role" name="role" required>
+                    <option value="">-- Select role --</option>
+                    <option value="admin">Admin (Full Access)</option>
+                    <option value="viewer">Viewer (Read-Only)</option>
+                </select>
+                <p class="help-text">
+                    <strong>Admin:</strong> Can edit, delete, and manage everything<br>
+                    <strong>Viewer:</strong> Can only view dashboard and evaluations (for GLs)
+                </p>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Create User</button>
+        </form>
+    </div>
+
+    <!-- Existing Users Section -->
+    <div class="admin-section">
+        <h2>👤 Existing Users</h2>
+        {% if users %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td><strong>{{ user.username }}</strong></td>
+                    <td>
+                        <span class="role-badge role-{{ user.role }}">
+                            {{ user.role|title }}
+                        </span>
+                    </td>
+                    <td>{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else 'N/A' }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button onclick="showPasswordModal('{{ user.username }}', {{ user.id }})" class="btn btn-small btn-secondary">
+                                🔑 Reset Password
+                            </button>
+                            {% if user.username != 'admin' and user.id != current_user.id %}
+                            <button onclick="deleteUser('{{ user.username }}', {{ user.id }})" class="btn btn-small btn-danger">
+                                🗑️ Delete
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="no-data">No users found.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Password Reset Modal -->
+<div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <h3>Reset Password</h3>
+        <form method="POST" action="{{ url_for('dashboard.reset_password') }}" id="passwordForm">
+            <input type="hidden" name="user_id" id="modal_user_id">
+            <p>Reset password for: <strong id="modal_username"></strong></p>
+            
+            <div class="form-group">
+                <label for="new_password">New Password *</label>
+                <input type="password" id="new_password" name="new_password" required minlength="6">
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" onclick="closePasswordModal()" class="btn btn-secondary">Cancel</button>
+                <button type="submit" class="btn btn-primary">Reset Password</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function showPasswordModal(username, userId) {
+    document.getElementById('modal_username').textContent = username;
+    document.getElementById('modal_user_id').value = userId;
+    document.getElementById('passwordModal').classList.add('active');
+}
+
+function closePasswordModal() {
+    document.getElementById('passwordModal').classList.remove('active');
+    document.getElementById('passwordForm').reset();
+}
+
+function deleteUser(username, userId) {
+    if (confirm(`Are you sure you want to delete user "${username}"?\n\nThis action cannot be undone.`)) {
+        fetch(`{{ url_for('dashboard.delete_user') }}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_id: userId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('User deleted successfully!');
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error deleting user. Please try again.');
+            console.error(error);
+        });
+    }
+}
+
+// Close modal when clicking outside
+document.getElementById('passwordModal').addEventListener('click', (e) => {
+    if (e.target.id === 'passwordModal') {
+        closePasswordModal();
+    }
+});
+</script>
+
+<style>
+.admin-panel-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.admin-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.admin-section h2 {
+    color: #1e293b;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 1.5rem 0;
+}
+
+.admin-form {
+    max-width: 600px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.help-text {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 6px;
+    border-left: 3px solid #3b82f6;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.role-admin {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.role-viewer {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+}
+
+.modal-content h3 {
+    margin: 0 0 1.5rem 0;
+    color: #1e293b;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}

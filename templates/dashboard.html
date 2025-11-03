@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Volunteer Evaluation Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h2>Volunteer Evaluation Dashboard</h2>
+        <div class="dashboard-actions">
+            <a href="{{ url_for('dashboard.export_evaluations') }}" class="btn btn-success">
+                📊 Export to CSV
+            </a>
+            <a href="{{ url_for('evaluation.submit_evaluation') }}" target="_blank" class="btn btn-primary">
+                + New Evaluation
+            </a>
+        </div>
+    </div>
+    
+    <!-- Summary Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-content">
+                <h3>Active Volunteers</h3>
+                <p class="stat-number">{{ total_volunteers }}</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-content">
+                <h3>Total Evaluations</h3>
+                <p class="stat-number">{{ total_evaluations }}</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-content">
+                <h3>Top Performers</h3>
+                <p class="stat-number">{{ top_performers|length }}</p>
+            </div>
+        </div>
+        
+        <div class="stat-card warning">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-content">
+                <h3>Needs Attention</h3>
+                <p class="stat-number">{{ needs_attention|length }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="dashboard-grid">
+        <!-- Top Performers -->
+        <div class="dashboard-card">
+            <h3>🌟 Top Performers (Score ≥ 8.0)</h3>
+            {% if top_performers %}
+            <div class="performer-list">
+                {% for item in top_performers %}
+                <div class="performer-item">
+                    <a href="{{ url_for('dashboard.volunteer_profile', volunteer_id=item.volunteer.id) }}">
+                        <span class="performer-name">
+                            {{ item.volunteer.first_name }} {{ item.volunteer.last_name }}
+                        </span>
+                        <span class="performer-score score-excellent">
+                            {{ "%.1f"|format(item.score) }}
+                        </span>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="empty-state">No top performers yet. Keep evaluating!</p>
+            {% endif %}
+        </div>
+        
+        <!-- Needs Attention -->
+        <div class="dashboard-card">
+            <h3>⚠️ Needs Attention (Score &lt; 6.0)</h3>
+            {% if needs_attention %}
+            <div class="performer-list">
+                {% for item in needs_attention %}
+                <div class="performer-item">
+                    <a href="{{ url_for('dashboard.volunteer_profile', volunteer_id=item.volunteer.id) }}">
+                        <span class="performer-name">
+                            {{ item.volunteer.first_name }} {{ item.volunteer.last_name }}
+                        </span>
+                        <span class="performer-score score-low">
+                            {{ "%.1f"|format(item.score) }}
+                        </span>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="empty-state">All volunteers performing well!</p>
+            {% endif %}
+        </div>
+        
+        <!-- Recent Evaluations -->
+        <div class="dashboard-card full-width">
+            <h3>📋 Recent Evaluations</h3>
+            {% if recent_evaluations %}
+            <div class="evaluations-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Volunteer</th>
+                            <th>Role</th>
+                            <th>Event</th>
+                            <th>Overall Score</th>
+                            <th>Evaluator</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for eval in recent_evaluations %}
+                        <tr>
+                            <td>{{ eval.evaluation_date.strftime('%m/%d/%Y') if eval.evaluation_date else 'N/A' }}</td>
+                            <td>
+                                <a href="{{ url_for('dashboard.volunteer_profile', volunteer_id=eval.volunteer.id) }}">
+                                    {{ eval.volunteer.first_name }} {{ eval.volunteer.last_name }}
+                                </a>
+                            </td>
+                            <td>{{ eval.role_performed or 'N/A' }}</td>
+                            <td>{{ eval.event_name or 'N/A' }}</td>
+                            <td>
+                                {% set overall = ((eval.reliability + eval.quality_of_work + eval.initiative + eval.teamwork + eval.communication) / 5.0) %}
+                                <span class="score-badge {% if overall >= 8 %}score-excellent{% elif overall >= 6 %}score-good{% else %}score-low{% endif %}">
+                                    {{ "%.1f"|format(overall) }}
+                                </span>
+                            </td>
+                            <td>
+                                {{ eval.evaluator_name }}
+                                {% if eval.evaluator_role %}
+                                <span class="evaluator-role-badge">{{ eval.evaluator_role }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="empty-state">No evaluations yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

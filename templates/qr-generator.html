@@ -1,0 +1,379 @@
+{% extends "base.html" %}
+
+{% block title %}QR Code Generator{% endblock %}
+
+{% block content %}
+<div class="qr-generator-container">
+    <h1>📱 QR Code Generator</h1>
+    <p class="subtitle">Generate a QR code for the evaluation form to share with GLs</p>
+
+    <div class="qr-section">
+        <div class="qr-display">
+            <h2>Your Evaluation Form QR Code</h2>
+            <div id="qrcode" class="qr-code-image"></div>
+            <p class="qr-url">{{ eval_url }}</p>
+        </div>
+
+        <div class="qr-actions">
+            <button onclick="downloadQR()" class="btn btn-primary">
+                <span>⬇️</span> Download QR Code
+            </button>
+            <button onclick="copyURL()" class="btn btn-secondary">
+                <span>📋</span> Copy URL
+            </button>
+            <button onclick="copyMessage()" class="btn btn-success">
+                <span>💬</span> Copy Telegram Message
+            </button>
+        </div>
+    </div>
+
+    <div class="message-template">
+        <h3>📝 Telegram Message Template</h3>
+        <div class="template-box">
+            <textarea id="messageTemplate" rows="10" readonly>🎯 Evaluation Time!
+
+Hey team! Please take 5 minutes to evaluate your volunteers from [EVENT NAME].
+
+📝 Evaluation Form: {{ eval_url }}
+
+⏰ Please complete by [DATE]
+
+Scan the QR code with your phone camera or click the link above.
+
+Thanks! 🙏</textarea>
+        </div>
+        <p class="help-text">
+            <strong>How to use:</strong>
+            1. Click "Copy Telegram Message" above
+            2. Paste in your GL group chat
+            3. Replace [EVENT NAME] and [DATE]
+            4. Attach the downloaded QR code image
+            5. Send!
+        </p>
+    </div>
+
+    <div class="instructions">
+        <h3>📱 How GLs Use the QR Code</h3>
+        <div class="instruction-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Open Phone Camera</h4>
+                    <p>GLs open their phone's camera app</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Point at QR Code</h4>
+                    <p>Point camera at the QR code in Telegram</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Tap Notification</h4>
+                    <p>Tap the notification that appears</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Fill & Submit</h4>
+                    <p>Select volunteer, fill ratings, submit!</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h4>Repeat for Each Volunteer</h4>
+                    <p>Scan the same QR code again for next volunteer</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="info-box">
+        <h3>ℹ️ Multiple Volunteers</h3>
+        <p><strong>GLs can use the same QR code multiple times!</strong></p>
+        <p>After submitting one evaluation:</p>
+        <ul>
+            <li>✅ Scan the same QR code again</li>
+            <li>✅ Select a different volunteer from the dropdown</li>
+            <li>✅ Fill out the form</li>
+            <li>✅ Submit</li>
+            <li>✅ Repeat for each volunteer they worked with</li>
+        </ul>
+        <p style="margin-top: 1rem; color: #059669; font-weight: 600;">
+            💡 One QR code = Unlimited evaluations!
+        </p>
+    </div>
+</div>
+
+<!-- Include QRCode.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+// Generate QR code on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const qrcodeDiv = document.getElementById('qrcode');
+    const url = "{{ eval_url }}";
+    
+    new QRCode(qrcodeDiv, {
+        text: url,
+        width: 300,
+        height: 300,
+        colorDark: "#667eea",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+});
+
+// Download QR code as image
+function downloadQR() {
+    const canvas = document.querySelector('#qrcode canvas');
+    const url = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.download = 'evaluation-qr-code.png';
+    link.href = url;
+    link.click();
+    
+    showNotification('✅ QR code downloaded!');
+}
+
+// Copy URL to clipboard
+function copyURL() {
+    const url = "{{ eval_url }}";
+    navigator.clipboard.writeText(url).then(() => {
+        showNotification('✅ URL copied to clipboard!');
+    });
+}
+
+// Copy message template to clipboard
+function copyMessage() {
+    const message = document.getElementById('messageTemplate').value;
+    navigator.clipboard.writeText(message).then(() => {
+        showNotification('✅ Message copied! Paste in Telegram and edit [EVENT NAME] and [DATE]');
+    });
+}
+
+// Show notification
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+</script>
+
+<style>
+.qr-generator-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.subtitle {
+    color: #64748b;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.qr-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.qr-display {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.qr-code-image {
+    display: inline-block;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 1rem 0;
+}
+
+.qr-url {
+    color: #64748b;
+    font-family: monospace;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    word-break: break-all;
+}
+
+.qr-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.qr-actions .btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.message-template {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.template-box {
+    margin: 1rem 0;
+}
+
+.template-box textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+.help-text {
+    background: #f1f5f9;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    margin-top: 1rem;
+}
+
+.instructions {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.instruction-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.step {
+    display: flex;
+    gap: 1rem;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.step-content h4 {
+    margin: 0 0 0.5rem 0;
+    color: #1e293b;
+}
+
+.step-content p {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.info-box {
+    background: #f0f9ff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border-left: 4px solid #3b82f6;
+    margin-top: 2rem;
+}
+
+.info-box h3 {
+    color: #1e293b;
+    margin: 0 0 1rem 0;
+}
+
+.info-box p {
+    margin: 0 0 0.75rem 0;
+    color: #475569;
+}
+
+.info-box ul {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+}
+
+.info-box li {
+    color: #475569;
+    margin: 0.5rem 0;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #10b981;
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+@media (max-width: 768px) {
+    .instruction-steps {
+        grid-template-columns: 1fr;
+    }
+    
+    .qr-actions {
+        flex-direction: column;
+    }
+    
+    .qr-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}

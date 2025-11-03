@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ volunteer.first_name }} {{ volunteer.last_name }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h2>Edit Volunteer Information</h2>
+        <p>Update contact details for {{ volunteer.first_name }} {{ volunteer.last_name }}</p>
+    </div>
+    
+    <form method="POST" class="evaluation-form">
+        <section class="form-section">
+            <h3>Personal Information</h3>
+            
+            <div class="form-group">
+                <label for="first_name">First Name *</label>
+                <input type="text" id="first_name" name="first_name" value="{{ volunteer.first_name }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="last_name">Last Name *</label>
+                <input type="text" id="last_name" name="last_name" value="{{ volunteer.last_name }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="status">Status *</label>
+                <select id="status" name="status" required>
+                    <option value="active" {% if volunteer.status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="inactive" {% if volunteer.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                </select>
+            </div>
+        </section>
+        
+        <div class="form-actions" style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <a href="{{ url_for('dashboard.volunteer_profile', volunteer_id=volunteer.id) }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

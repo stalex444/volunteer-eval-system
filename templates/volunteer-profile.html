@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}{{ volunteer.first_name }} {{ volunteer.last_name }} - Profile{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>{{ volunteer.first_name }} {{ volunteer.last_name }}</h1>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <span class="status-badge status-{{ volunteer.status }}">{{ volunteer.status|title }}</span>
+            <a href="{{ url_for('dashboard.edit_volunteer', volunteer_id=volunteer.id) }}" class="btn btn-primary">Edit Info</a>
+        </div>
+    </div>
+
+    <div class="profile-info">
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Status:</label>
+                <span>{{ volunteer.status|title }}</span>
+            </div>
+            <div class="info-item">
+                <label>Total Evaluations:</label>
+                <span>{{ volunteer.evaluations.count() }}</span>
+            </div>
+        </div>
+    </div>
+
+    {% if stats %}
+    <div class="stats-section">
+        <h2>Performance Statistics</h2>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Evaluations</h3>
+                <p class="stat-number">{{ stats.evaluation_count }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Average Overall Rating</h3>
+                <p class="stat-number">{{ "%.2f"|format(stats.average_overall) if stats.average_overall else 'N/A' }}</p>
+            </div>
+            {% if stats.trend %}
+            <div class="stat-card">
+                <h3>Trend</h3>
+                <p class="stat-number trend-{{ stats.trend }}">{{ stats.trend|title }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if stats.average_by_category %}
+        <div class="category-ratings">
+            <h3>Average Ratings by Category</h3>
+            <div class="rating-bars">
+                {% for category, rating in stats.average_by_category.items() %}
+                <div class="rating-bar-item">
+                    <label>{{ category|title }}:</label>
+                    <div class="rating-bar">
+                        <div class="rating-fill" style="width: {{ (rating / 5 * 100)|int }}%"></div>
+                    </div>
+                    <span class="rating-value">{{ "%.2f"|format(rating) }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if trend_data %}
+    <div class="trend-section">
+        <h2>Performance Trend</h2>
+        <div id="trend-chart"></div>
+    </div>
+    {% endif %}
+
+    <div class="evaluations-section">
+        <h2>All Evaluations</h2>
+        {% if volunteer.evaluations.count() > 0 %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Event</th>
+                    <th>Role</th>
+                    <th>Evaluator</th>
+                    <th>Overall</th>
+                    <th>Reliability</th>
+                    <th>Communication</th>
+                    <th>Teamwork</th>
+                    <th>Initiative</th>
+                    <th>Quality</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for eval in evaluations %}
+                <tr>
+                    <td>{{ eval.evaluation_date.strftime('%Y-%m-%d') if eval.evaluation_date else eval.submitted_at.strftime('%Y-%m-%d') }}</td>
+                    <td><strong>{{ eval.event_name or 'N/A' }}</strong></td>
+                    <td><strong>{{ eval.role_performed or 'N/A' }}</strong></td>
+                    <td>{{ eval.evaluator_name }}</td>
+                    {% set overall = ((eval.reliability + eval.quality_of_work + eval.initiative + eval.teamwork + eval.communication) / 5.0) %}
+                    <td><span class="rating-badge rating-{{ "%.0f"|format(overall) }}">{{ "%.1f"|format(overall) }}</span></td>
+                    <td><span class="rating-badge rating-{{ eval.reliability }}">{{ eval.reliability }}</span></td>
+                    <td><span class="rating-badge rating-{{ eval.communication }}">{{ eval.communication }}</span></td>
+                    <td><span class="rating-badge rating-{{ eval.teamwork }}">{{ eval.teamwork }}</span></td>
+                    <td><span class="rating-badge rating-{{ eval.initiative }}">{{ eval.initiative }}</span></td>
+                    <td><span class="rating-badge rating-{{ eval.quality_of_work }}">{{ eval.quality_of_work }}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="{{ url_for('dashboard.view_evaluation', evaluation_id=eval.id) }}" class="btn btn-small btn-secondary">👁️ View</a>
+                            {% if current_user.role == 'admin' %}
+                            <button onclick="deleteEvaluation({{ eval.id }})" class="btn btn-small btn-danger">🗑️ Delete</button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% if eval.strengths or eval.areas_for_improvement or eval.additional_comments %}
+                <tr class="feedback-row">
+                    <td colspan="11" style="background: #f8fafc; padding: 1rem;">
+                        <div style="max-width: 800px;">
+                            {% if eval.strengths %}
+                            <div class="feedback-item" style="margin-bottom: 0.75rem;">
+                                <strong style="color: #059669;">💪 Strengths:</strong> {{ eval.strengths }}
+                            </div>
+                            {% endif %}
+                            {% if eval.areas_for_improvement %}
+                            <div class="feedback-item" style="margin-bottom: 0.75rem;">
+                                <strong style="color: #dc2626;">📈 Areas for Improvement:</strong> {{ eval.areas_for_improvement }}
+                            </div>
+                            {% endif %}
+                            {% if eval.additional_comments %}
+                            <div class="feedback-item">
+                                <strong style="color: #2563eb;">💬 Additional Comments:</strong> {{ eval.additional_comments }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="no-data">No evaluations submitted for this volunteer yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="profile-actions">
+        <a href="{{ url_for('dashboard.index') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+<script>
+function deleteEvaluation(evaluationId) {
+    if (confirm('Are you sure you want to delete this evaluation?\n\nThis action cannot be undone.')) {
+        fetch('/dashboard/evaluation/' + evaluationId + '/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Evaluation deleted successfully!');
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error deleting evaluation. Please try again.');
+            console.error(error);
+        });
+    }
+}
+</script>
+{% endblock %}

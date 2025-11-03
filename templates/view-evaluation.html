@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+
+{% block title %}Evaluation Details{% endblock %}
+
+{% block content %}
+<div class="evaluation-detail-container">
+    <div class="eval-header">
+        <h1>📋 Evaluation Details</h1>
+        <div class="eval-meta">
+            <span class="meta-item">
+                <strong>Volunteer:</strong> 
+                <a href="{{ url_for('dashboard.volunteer_profile', volunteer_id=evaluation.volunteer.id) }}">
+                    {{ evaluation.volunteer.first_name }} {{ evaluation.volunteer.last_name }}
+                </a>
+            </span>
+            <span class="meta-item">
+                <strong>Date:</strong> 
+                {{ evaluation.evaluation_date.strftime('%B %d, %Y') if evaluation.evaluation_date else evaluation.submitted_at.strftime('%B %d, %Y') }}
+            </span>
+        </div>
+    </div>
+
+    <div class="eval-section">
+        <h2>Event Information</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Event:</label>
+                <span>{{ evaluation.event_name or 'N/A' }}</span>
+            </div>
+            <div class="info-item">
+                <label>Role Performed:</label>
+                <span>{{ evaluation.role_performed or 'N/A' }}</span>
+            </div>
+            <div class="info-item">
+                <label>Evaluator:</label>
+                <span>{{ evaluation.evaluator_name }}</span>
+            </div>
+            <div class="info-item">
+                <label>Submitted:</label>
+                <span>{{ evaluation.submitted_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="eval-section">
+        <h2>Performance Ratings</h2>
+        <div class="ratings-grid">
+            <div class="rating-card">
+                <div class="rating-label">Reliability</div>
+                <div class="rating-value-large">{{ evaluation.reliability }}</div>
+                <div class="rating-bar">
+                    <div class="rating-fill" style="width: {{ (evaluation.reliability / 10 * 100)|int }}%"></div>
+                </div>
+            </div>
+            
+            <div class="rating-card">
+                <div class="rating-label">Communication</div>
+                <div class="rating-value-large">{{ evaluation.communication }}</div>
+                <div class="rating-bar">
+                    <div class="rating-fill" style="width: {{ (evaluation.communication / 10 * 100)|int }}%"></div>
+                </div>
+            </div>
+            
+            <div class="rating-card">
+                <div class="rating-label">Teamwork</div>
+                <div class="rating-value-large">{{ evaluation.teamwork }}</div>
+                <div class="rating-bar">
+                    <div class="rating-fill" style="width: {{ (evaluation.teamwork / 10 * 100)|int }}%"></div>
+                </div>
+            </div>
+            
+            <div class="rating-card">
+                <div class="rating-label">Initiative</div>
+                <div class="rating-value-large">{{ evaluation.initiative }}</div>
+                <div class="rating-bar">
+                    <div class="rating-fill" style="width: {{ (evaluation.initiative / 10 * 100)|int }}%"></div>
+                </div>
+            </div>
+            
+            <div class="rating-card">
+                <div class="rating-label">Quality of Work</div>
+                <div class="rating-value-large">{{ evaluation.quality_of_work }}</div>
+                <div class="rating-bar">
+                    <div class="rating-fill" style="width: {{ (evaluation.quality_of_work / 10 * 100)|int }}%"></div>
+                </div>
+            </div>
+            
+            {% set overall = ((evaluation.reliability + evaluation.quality_of_work + evaluation.initiative + evaluation.teamwork + evaluation.communication) / 5.0) %}
+            <div class="rating-card overall-card">
+                <div class="rating-label">Overall Average</div>
+                <div class="rating-value-large">{{ "%.1f"|format(overall) }}</div>
+                <div class="rating-bar">
+                    <div class="rating-fill" style="width: {{ (overall / 10 * 100)|int }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if evaluation.strengths or evaluation.areas_for_improvement or evaluation.additional_comments %}
+    <div class="eval-section">
+        <h2>Feedback</h2>
+        
+        {% if evaluation.strengths %}
+        <div class="feedback-box strengths-box">
+            <h3>💪 Strengths</h3>
+            <p>{{ evaluation.strengths }}</p>
+        </div>
+        {% endif %}
+        
+        {% if evaluation.areas_for_improvement %}
+        <div class="feedback-box improvement-box">
+            <h3>📈 Areas for Improvement</h3>
+            <p>{{ evaluation.areas_for_improvement }}</p>
+        </div>
+        {% endif %}
+        
+        {% if evaluation.additional_comments %}
+        <div class="feedback-box comments-box">
+            <h3>💬 Additional Comments</h3>
+            <p>{{ evaluation.additional_comments }}</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="eval-actions">
+        <a href="{{ url_for('dashboard.volunteer_profile', volunteer_id=evaluation.volunteer.id) }}" class="btn btn-secondary">
+            ← Back to Profile
+        </a>
+        {% if current_user.role == 'admin' %}
+        <button onclick="deleteEvaluation({{ evaluation.id }})" class="btn btn-danger">
+            🗑️ Delete Evaluation
+        </button>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function deleteEvaluation(evaluationId) {
+    if (confirm('Are you sure you want to delete this evaluation?\n\nThis action cannot be undone.')) {
+        fetch('/dashboard/evaluation/' + evaluationId + '/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Evaluation deleted successfully!');
+                window.location.href = '/dashboard/volunteer/' + {{ evaluation.volunteer.id }};
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error deleting evaluation. Please try again.');
+            console.error(error);
+        });
+    }
+}
+</script>
+
+<style>
+.evaluation-detail-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.eval-header {
+    margin-bottom: 2rem;
+}
+
+.eval-header h1 {
+    margin-bottom: 1rem;
+}
+
+.eval-meta {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    color: #64748b;
+}
+
+.meta-item {
+    font-size: 0.95rem;
+}
+
+.meta-item strong {
+    color: #1e293b;
+}
+
+.meta-item a {
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+.meta-item a:hover {
+    text-decoration: underline;
+}
+
+.eval-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.eval-section h2 {
+    color: #1e293b;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 1.5rem 0;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.info-item label {
+    font-weight: 600;
+    color: #64748b;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.info-item span {
+    color: #1e293b;
+    font-size: 1rem;
+}
+
+.ratings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+}
+
+.rating-card {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    border: 2px solid #e2e8f0;
+}
+
+.overall-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+.overall-card .rating-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.rating-label {
+    font-weight: 600;
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.rating-value-large {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.75rem;
+}
+
+.overall-card .rating-value-large {
+    color: white;
+}
+
+.rating-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.overall-card .rating-bar {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.rating-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s ease;
+}
+
+.overall-card .rating-fill {
+    background: white;
+}
+
+.feedback-box {
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.feedback-box:last-child {
+    margin-bottom: 0;
+}
+
+.feedback-box h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.feedback-box p {
+    margin: 0;
+    line-height: 1.6;
+    color: #475569;
+}
+
+.strengths-box {
+    background: #d1fae5;
+    border-left: 4px solid #059669;
+}
+
+.strengths-box h3 {
+    color: #065f46;
+}
+
+.improvement-box {
+    background: #fee2e2;
+    border-left: 4px solid #dc2626;
+}
+
+.improvement-box h3 {
+    color: #991b1b;
+}
+
+.comments-box {
+    background: #dbeafe;
+    border-left: 4px solid #2563eb;
+}
+
+.comments-box h3 {
+    color: #1e40af;
+}
+
+.eval-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+    .ratings-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .eval-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block content %}
+<div class="users-container">
+    <div class="users-header">
+        <h2>User Management</h2>
+        <p>Manage admin and viewer accounts for dashboard access</p>
+    </div>
+    
+    <!-- Add User Form -->
+    <div class="user-form-card">
+        <h3>Add New User</h3>
+        <form method="POST" action="{{ url_for('dashboard.add_user') }}" class="user-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="username">Username *</label>
+                    <input type="text" name="username" id="username" required 
+                           placeholder="e.g., john_smith">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" name="password" id="password" required 
+                           placeholder="Minimum 8 characters">
+                </div>
+                
+                <div class="form-group">
+                    <label for="role">Role *</label>
+                    <select name="role" id="role" required>
+                        <option value="admin">Admin (Full Access)</option>
+                        <option value="viewer">Viewer (Read Only)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Add User</button>
+        </form>
+        
+        <div class="role-info">
+            <h4>Role Descriptions:</h4>
+            <ul>
+                <li><strong>Admin:</strong> Full access - can manage events, users, and view all evaluations</li>
+                <li><strong>Viewer:</strong> Read-only access - can view dashboard and evaluations but cannot edit</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Users List -->
+    <div class="users-list-card">
+        <h3>Current Users ({{ users|length }} total)</h3>
+        
+        {% if users %}
+        <div class="users-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>
+                            <strong>{{ user.username }}</strong>
+                            {% if user.id == current_user.id %}
+                            <span class="badge-you">You</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="role-badge role-{{ user.role }}">
+                                {{ user.role|title }}
+                            </span>
+                        </td>
+                        <td>{{ user.created_at.strftime('%b %d, %Y') }}</td>
+                        <td class="action-buttons">
+                            <!-- Change Password -->
+                            <button onclick="showPasswordModal({{ user.id }}, '{{ user.username }}')" 
+                                    class="btn-action btn-password">
+                                Change Password
+                            </button>
+                            
+                            <!-- Delete User -->
+                            <form method="POST" 
+                                  action="{{ url_for('dashboard.delete_user', user_id=user.id) }}" 
+                                  onsubmit="return confirm('Are you sure you want to delete {{ user.username }}?');"
+                                  style="display: inline;">
+                                <button type="submit" 
+                                        class="btn-action btn-delete" 
+                                        {% if user.id == current_user.id %}disabled title="Cannot delete your own account"{% endif %}>
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No users found.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <h2>Change Password</h2>
+        <p id="passwordUsername"></p>
+        <form id="passwordForm" method="POST">
+            <div class="form-group">
+                <label for="new_password">New Password</label>
+                <input type="password" name="new_password" id="new_password" required minlength="8">
+            </div>
+            <div class="modal-actions">
+                <button type="submit" class="btn btn-primary">Update Password</button>
+                <button type="button" onclick="closePasswordModal()" class="btn btn-secondary">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showPasswordModal(userId, username) {
+    document.getElementById('passwordModal').classList.add('active');
+    document.getElementById('passwordUsername').textContent = `Change password for: ${username}`;
+    document.getElementById('passwordForm').action = `/dashboard/users/change-password/${userId}`;
+}
+
+function closePasswordModal() {
+    document.getElementById('passwordModal').classList.remove('active');
+    document.getElementById('new_password').value = '';
+}
+
+// Close modal when clicking outside
+document.getElementById('passwordModal').addEventListener('click', (e) => {
+    if (e.target.id === 'passwordModal') {
+        closePasswordModal();
+    }
+});
+</script>
+{% endblock %}

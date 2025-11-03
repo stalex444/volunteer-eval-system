@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Volunteer Evaluation System{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-box">
+        <h1>Leadership Dashboard Login</h1>
+        <p class="subtitle">Please log in to access the volunteer evaluation dashboard</p>
+
+        <form method="POST" action="{{ url_for('login') }}" class="login-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Log In</button>
+            </div>
+        </form>
+
+        <div class="login-footer">
+            <p><a href="{{ url_for('evaluation.submit_evaluation') }}">Submit an evaluation without logging in</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
