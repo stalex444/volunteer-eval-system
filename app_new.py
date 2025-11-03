@@ -82,8 +82,11 @@ def create_app():
     
     return app
 
+# Create app instance for gunicorn
+app = create_app()
+
 if __name__ == '__main__':
-    app = create_app()
+    # app is already created above
     print("\n" + "="*60)
     print("🚀 Volunteer Evaluation System Starting...")
     print("="*60)
