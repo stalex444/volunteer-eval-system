@@ -6,13 +6,8 @@ from whitenoise import WhiteNoise
 import os
 
 def create_app():
-    app = Flask(__name__, 
-                static_url_path='/static',
-                static_folder='static')
+    app = Flask(__name__)
     app.config.from_object(Config)
-    
-    # Enable WhiteNoise for static file serving
-    app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/', prefix='static/')
     
     # Ensure database directory exists BEFORE initializing db
     db_path = app.config['SQLALCHEMY_DATABASE_URI'].replace('sqlite:///', '')
@@ -90,6 +85,13 @@ def create_app():
 
 # Create app instance for gunicorn
 app = create_app()
+
+# Wrap with WhiteNoise for static file serving
+app.wsgi_app = WhiteNoise(
+    app.wsgi_app,
+    root=os.path.join(os.path.dirname(__file__), 'static'),
+    prefix='static/'
+)
 
 if __name__ == '__main__':
     # app is already created above
