@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, logout_user, current_user
 from models import db, User
 from config import Config
+from whitenoise import WhiteNoise
 import os
 
 def create_app():
@@ -9,6 +10,9 @@ def create_app():
                 static_url_path='/static',
                 static_folder='static')
     app.config.from_object(Config)
+    
+    # Enable WhiteNoise for static file serving
+    app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/', prefix='static/')
     
     # Ensure database directory exists BEFORE initializing db
     db_path = app.config['SQLALCHEMY_DATABASE_URI'].replace('sqlite:///', '')
