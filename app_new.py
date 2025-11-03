@@ -87,11 +87,9 @@ def create_app():
 app = create_app()
 
 # Wrap with WhiteNoise for static file serving
-app.wsgi_app = WhiteNoise(
-    app.wsgi_app,
-    root=os.path.join(os.path.dirname(__file__), 'static'),
-    prefix='static/'
-)
+base_dir = os.path.dirname(os.path.abspath(__file__))
+app.wsgi_app = WhiteNoise(app.wsgi_app)
+app.wsgi_app.add_files(os.path.join(base_dir, 'static'), prefix='static/')
 
 if __name__ == '__main__':
     # app is already created above
