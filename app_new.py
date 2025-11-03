@@ -5,7 +5,9 @@ from config import Config
 import os
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, 
+                static_url_path='/static',
+                static_folder='static')
     app.config.from_object(Config)
     
     # Ensure database directory exists BEFORE initializing db
