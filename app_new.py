@@ -1,8 +1,7 @@
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, redirect, url_for, flash, request, send_from_directory
 from flask_login import LoginManager, login_user, logout_user, current_user
 from models import db, User
 from config import Config
-from whitenoise import WhiteNoise
 import os
 
 def create_app():
@@ -81,15 +80,15 @@ def create_app():
         flash('You have been logged out', 'success')
         return redirect(url_for('login'))
     
+    # Custom static file route
+    @app.route('/static/<path:filename>')
+    def serve_static(filename):
+        return send_from_directory('static', filename)
+    
     return app
 
 # Create app instance for gunicorn
 app = create_app()
-
-# Wrap with WhiteNoise for static file serving
-base_dir = os.path.dirname(os.path.abspath(__file__))
-app.wsgi_app = WhiteNoise(app.wsgi_app)
-app.wsgi_app.add_files(os.path.join(base_dir, 'static'), prefix='static/')
 
 if __name__ == '__main__':
     # app is already created above
