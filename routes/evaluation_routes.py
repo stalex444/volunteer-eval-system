@@ -8,7 +8,8 @@ evaluation_bp = Blueprint('evaluation', __name__)
 @evaluation_bp.route('/')
 def index():
     """Landing page with link to evaluation form"""
-    return render_template('evaluation-form.html')
+    volunteers = Volunteer.query.filter_by(status='active').order_by(Volunteer.last_name, Volunteer.first_name).all()
+    return render_template('evaluation-form.html', volunteers=volunteers)
 
 @evaluation_bp.route('/evaluate', methods=['GET', 'POST'])
 def submit_evaluation():
