@@ -127,7 +127,7 @@ class Evaluation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     evaluation_id = db.Column(db.String(20), unique=True, nullable=False)  # e.g., EVAL-00001
     volunteer_id = db.Column(db.Integer, db.ForeignKey('volunteers.id'), nullable=False)
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=True)
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'))
     date_of_service = db.Column(db.Date, nullable=False)
     
