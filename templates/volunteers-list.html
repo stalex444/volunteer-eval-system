@@ -17,6 +17,9 @@
 .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: 500; }
 .status-active { background: #d1fae5; color: #065f46; }
 .status-inactive { background: #fee2e2; color: #991b1b; }
+.btn-danger { background: #ef4444; color: white; }
+.btn-danger:hover { background: #dc2626; }
+.btn-small { padding: 6px 12px; font-size: 14px; }
 </style>
 <div class="volunteers-list-container">
     <div class="page-header">
@@ -94,6 +97,11 @@
                     </td>
                     <td>
                         <a href="{{ url_for('dashboard.volunteer_profile', volunteer_id=vol.id) }}" class="btn btn-small">View Profile</a>
+                        {% if current_user.role == 'admin' %}
+                        <form method="POST" action="{{ url_for('dashboard.delete_volunteer', volunteer_id=vol.id) }}" style="display: inline;" onsubmit="return confirm('Delete {{ vol.first_name }} {{ vol.last_name }} and all their evaluations?');">
+                            <button type="submit" class="btn btn-small btn-danger">Delete</button>
+                        </form>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
