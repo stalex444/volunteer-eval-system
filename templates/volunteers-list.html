@@ -25,6 +25,7 @@
             <p class="subtitle">Complete list of volunteers with performance statistics</p>
         </div>
         <a href="{{ url_for('dashboard.add_volunteer') }}" class="btn btn-primary">
+            ➕ Add Volunteer
         </a>
     </div>
 
@@ -59,6 +60,7 @@
 
     <div class="volunteers-table">
         {% if volunteers %}
+        <table>
             <thead>
                 <tr>
                     <th>Name</th>
