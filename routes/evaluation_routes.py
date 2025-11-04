@@ -49,7 +49,7 @@ def submit_evaluation():
         evaluation = Evaluation(
             evaluation_id=evaluation_id,
             volunteer_id=volunteer_id,
-            role_id=1,  # Default role, update based on your needs
+            role_id=None,  # Not using role table, using role_performed text field instead
             date_of_service=datetime.utcnow().date(),
             event_name=request.form.get('event_name'),
             service_month=request.form.get('service_month'),
