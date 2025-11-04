@@ -3,6 +3,21 @@
 {% block title %}All Volunteers{% endblock %}
 
 {% block content %}
+<style>
+.volunteers-table { width: 100%; overflow-x: auto; margin-top: 20px; }
+.volunteers-table table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.volunteers-table thead { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%); }
+.volunteers-table th { padding: 16px; text-align: left; color: white; font-weight: 600; }
+.volunteers-table td { padding: 16px; border-bottom: 1px solid #e5e7eb; }
+.volunteers-table tbody tr:hover { background: #f9fafb; }
+.btn { display: inline-block; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: all 0.3s; }
+.btn-primary { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; border: none; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(30, 64, 175, 0.4); }
+.btn-secondary { background: #64748b; color: white; }
+.status-badge { padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: 500; }
+.status-active { background: #d1fae5; color: #065f46; }
+.status-inactive { background: #fee2e2; color: #991b1b; }
+</style>
 <div class="volunteers-list-container">
     <div class="page-header">
         <div>
