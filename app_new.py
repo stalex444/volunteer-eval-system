@@ -50,7 +50,9 @@ def create_app():
     # Home route
     @app.route('/')
     def index():
-        return redirect(url_for('dashboard.index'))
+        if current_user.is_authenticated:
+            return redirect(url_for('dashboard.index'))
+        return render_template('landing.html')
     
     # Login route
     @app.route('/login', methods=['GET', 'POST'])

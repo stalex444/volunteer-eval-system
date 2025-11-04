@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Evaluation System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            background: white;
+            border-radius: 16px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        h1 {
+            font-size: 48px;
+            color: #1e40af;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .subtitle {
+            font-size: 20px;
+            color: #64748b;
+            margin-bottom: 50px;
+        }
+        .button-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-block;
+            padding: 18px 40px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.3s;
+            min-width: 250px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(30, 64, 175, 0.4);
+        }
+        .btn-secondary {
+            background: white;
+            color: #1e40af;
+            border: 2px solid #1e40af;
+        }
+        .btn-secondary:hover {
+            background: #f0f9ff;
+            transform: translateY(-3px);
+        }
+        .info {
+            margin-top: 50px;
+            padding-top: 40px;
+            border-top: 1px solid #e5e7eb;
+        }
+        .info h2 {
+            color: #1e40af;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        .info p {
+            color: #64748b;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Volunteer Evaluation System</h1>
+        <p class="subtitle">Submit evaluations or access the dashboard</p>
+        
+        <div class="button-group">
+            <a href="{{ url_for('evaluate') }}" class="btn btn-primary">
+                ✍️ Submit Evaluation
+            </a>
+            <a href="{{ url_for('login') }}" class="btn btn-secondary">
+                🔐 Staff Login
+            </a>
+        </div>
+        
+        <div class="info">
+            <h2>How It Works</h2>
+            <p>
+                <strong>Group Leaders:</strong> Submit volunteer evaluations after each event using the evaluation form.<br><br>
+                <strong>Staff & Administrators:</strong> Log in to view dashboards, manage volunteers, and export reports.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
