@@ -395,6 +395,31 @@ def delete_evaluation(evaluation_id):
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
 
+@dashboard_bp.route('/volunteer/<int:volunteer_id>/delete', methods=['POST'])
+@login_required
+def delete_volunteer(volunteer_id):
+    """Delete a volunteer (admin only)"""
+    if current_user.role != 'admin':
+        flash('Access denied. Admin privileges required.', 'error')
+        return redirect(url_for('dashboard.volunteers_list'))
+    
+    try:
+        volunteer = Volunteer.query.get_or_404(volunteer_id)
+        volunteer_name = f"{volunteer.first_name} {volunteer.last_name}"
+        
+        # Delete all associated evaluations first
+        Evaluation.query.filter_by(volunteer_id=volunteer_id).delete()
+        
+        db.session.delete(volunteer)
+        db.session.commit()
+        
+        flash(f'Volunteer {volunteer_name} and all associated evaluations deleted successfully', 'success')
+        return redirect(url_for('dashboard.volunteers_list'))
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting volunteer: {str(e)}', 'error')
+        return redirect(url_for('dashboard.volunteers_list'))
+
 @dashboard_bp.route('/export/evaluations')
 @login_required
 def export_evaluations():
