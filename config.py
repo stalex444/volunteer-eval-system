@@ -1,18 +1,11 @@
 import os
 from datetime import timedelta
 
-# Get the absolute path to the project directory
-basedir = os.path.abspath(os.path.dirname(__file__))
-
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     
-    # Railway provides DATABASE_URL with postgres://, but SQLAlchemy needs postgresql://
-    database_url = os.environ.get('DATABASE_URL') or 'sqlite:///volunteer_eval.db'
-    if database_url.startswith('postgres://'):
-        database_url = database_url.replace('postgres://', 'postgresql://', 1)
-    
-    SQLALCHEMY_DATABASE_URI = database_url
+    # Force use of local SQLite database to avoid external Postgres schema issues
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///volunteer_eval.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Session config

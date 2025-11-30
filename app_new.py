@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, flash, request, sen
 from flask_login import LoginManager, login_user, logout_user, current_user
 from models import db, User
 from config import Config
+from sqlalchemy import text
 import os
 
 def create_app():
@@ -29,6 +30,20 @@ def create_app():
     # Create database tables
     with app.app_context():
         db.create_all()
+        
+        # Ensure new columns exist in PostgreSQL databases
+        engine = db.get_engine()
+        if engine.url.drivername.startswith('postgresql'):
+            with engine.connect() as conn:
+                conn.execute(text("""
+                    ALTER TABLE evaluations
+                    ADD COLUMN IF NOT EXISTS would_work_again VARCHAR(50)
+                """))
+                conn.execute(text("""
+                    ALTER TABLE evaluations
+                    ADD COLUMN IF NOT EXISTS recommended_roles TEXT
+                """))
+                conn.commit()
         
         # Create default admin user if none exists
         if User.query.count() == 0:
