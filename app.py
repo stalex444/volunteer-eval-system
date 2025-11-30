@@ -23,6 +23,17 @@ app.register_blueprint(evaluation_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(api_bp)
 
+# Create default admin user if none exists
+def create_default_admin():
+    """Create default admin user if no users exist"""
+    with app.app_context():
+        if User.query.count() == 0:
+            admin = User(username='admin', role='admin')
+            admin.set_password('changeme123')
+            db.session.add(admin)
+            db.session.commit()
+            print('✓ Default admin user created (username: admin, password: changeme123)')
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -276,4 +287,7 @@ def generate_evaluation_id():
     return next_id
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()  # Ensure tables exist
+        create_default_admin()  # Create admin if needed
     app.run(debug=True)
