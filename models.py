@@ -142,6 +142,8 @@ class Evaluation(db.Model):
     strengths = db.Column(db.Text)
     areas_for_improvement = db.Column(db.Text)
     additional_comments = db.Column(db.Text)
+    would_work_again = db.Column(db.String(50))
+    recommended_roles = db.Column(db.Text)
     
     # Event and service details
     event_name = db.Column(db.String(100))

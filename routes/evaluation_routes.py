@@ -67,7 +67,9 @@ def submit_evaluation():
             communication=int(request.form.get('communication')),
             strengths=request.form.get('strengths'),
             areas_for_improvement=request.form.get('areas_for_improvement'),
-            additional_comments=request.form.get('additional_comments')
+            additional_comments=request.form.get('additional_comments'),
+            would_work_again=request.form.get('would_work_again', ''),
+            recommended_roles=request.form.get('recommended_roles', '')
         )
         
         db.session.add(evaluation)
