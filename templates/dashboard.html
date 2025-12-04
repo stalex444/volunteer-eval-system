@@ -112,6 +112,7 @@
                             <th>Role</th>
                             <th>Event</th>
                             <th>Overall Score</th>
+                            <th>Work Again?</th>
                             <th>Evaluator</th>
                         </tr>
                     </thead>
@@ -131,6 +132,17 @@
                                 <span class="score-badge {% if overall >= 8 %}score-excellent{% elif overall >= 6 %}score-good{% else %}score-low{% endif %}">
                                     {{ "%.1f"|format(overall) }}
                                 </span>
+                            </td>
+                            <td>
+                                {% if eval.would_work_again == 'Yes' %}
+                                    <span class="work-again-badge yes">Yes</span>
+                                {% elif eval.would_work_again == 'No' %}
+                                    <span class="work-again-badge no">No</span>
+                                {% elif eval.would_work_again %}
+                                    <span class="work-again-badge maybe">{{ eval.would_work_again }}</span>
+                                {% else %}
+                                    <span style="color: #94a3b8;">—</span>
+                                {% endif %}
                             </td>
                             <td>
                                 {{ eval.evaluator_name }}
