@@ -114,7 +114,7 @@
                         </div>
                     </td>
                 </tr>
-                {% if eval.strengths or eval.areas_for_improvement or eval.additional_comments %}
+                {% if eval.strengths or eval.areas_for_improvement or eval.additional_comments or eval.would_work_again or eval.recommended_roles %}
                 <tr class="feedback-row">
                     <td colspan="11" style="background: #f8fafc; padding: 1rem;">
                         <div style="max-width: 800px;">
@@ -129,8 +129,25 @@
                             </div>
                             {% endif %}
                             {% if eval.additional_comments %}
-                            <div class="feedback-item">
+                            <div class="feedback-item" style="margin-bottom: 0.75rem;">
                                 <strong style="color: #2563eb;">💬 Additional Comments:</strong> {{ eval.additional_comments }}
+                            </div>
+                            {% endif %}
+                            {% if eval.would_work_again %}
+                            <div class="feedback-item" style="margin-bottom: 0.75rem;">
+                                <strong style="color: #6366f1;">🤝 Would Work With Again:</strong>
+                                {% if eval.would_work_again == 'Yes' %}
+                                    <span style="color: #16a34a; font-weight: 600;">{{ eval.would_work_again }}</span>
+                                {% elif eval.would_work_again == 'No' %}
+                                    <span style="color: #dc2626; font-weight: 600;">{{ eval.would_work_again }}</span>
+                                {% else %}
+                                    <span style="color: #ea580c; font-weight: 600;">{{ eval.would_work_again }}</span>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            {% if eval.recommended_roles %}
+                            <div class="feedback-item">
+                                <strong style="color: #8b5cf6;">🎯 Recommended Future Roles:</strong> {{ eval.recommended_roles }}
                             </div>
                             {% endif %}
                         </div>
