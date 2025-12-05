@@ -44,7 +44,47 @@
                 <p class="stat-number trend-{{ stats.trend }}">{{ stats.trend|title }}</p>
             </div>
             {% endif %}
+            {% if stats.recent_performance %}
+            <div class="stat-card">
+                <h3>Last 30 Days</h3>
+                <p class="stat-number">{{ "%.2f"|format(stats.recent_performance) }}</p>
+                <small style="color: #64748b;">{{ stats.recent_evaluation_count }} eval{{ 's' if stats.recent_evaluation_count != 1 else '' }}</small>
+            </div>
+            {% endif %}
         </div>
+        
+        {% if stats.work_again_summary and (stats.work_again_summary.Yes or stats.work_again_summary.No or stats.work_again_summary.Maybe) %}
+        <div class="stat-card" style="margin-top: 1.5rem;">
+            <h3>🤝 Would Work With Again</h3>
+            <div style="display: flex; gap: 2rem; margin-top: 0.75rem;">
+                <div style="text-align: center;">
+                    <span style="font-size: 1.75rem; font-weight: 700; color: #16a34a;">{{ stats.work_again_summary.Yes }}</span>
+                    <p style="color: #64748b; font-size: 0.875rem; margin: 0;">Yes</p>
+                </div>
+                <div style="text-align: center;">
+                    <span style="font-size: 1.75rem; font-weight: 700; color: #ea580c;">{{ stats.work_again_summary.Maybe }}</span>
+                    <p style="color: #64748b; font-size: 0.875rem; margin: 0;">Maybe</p>
+                </div>
+                <div style="text-align: center;">
+                    <span style="font-size: 1.75rem; font-weight: 700; color: #dc2626;">{{ stats.work_again_summary.No }}</span>
+                    <p style="color: #64748b; font-size: 0.875rem; margin: 0;">No</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if stats.recommended_roles and stats.recommended_roles|length > 0 %}
+        <div class="stat-card" style="margin-top: 1.5rem;">
+            <h3>🎯 Recommended Roles</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem;">
+                {% for role, count in stats.recommended_roles %}
+                <span style="background: #dbeafe; color: #1e40af; padding: 0.375rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500;">
+                    {{ role|title }}{% if count > 1 %} <span style="opacity: 0.7;">({{ count }})</span>{% endif %}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
 
         {% if stats.average_by_category %}
         <div class="category-ratings">
