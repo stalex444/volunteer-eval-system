@@ -13,25 +13,6 @@
             <h2>Volunteer Information</h2>
             
             <div class="form-group">
-                <label for="event_name">Event Name *</label>
-                <select id="event_name" name="event_name" required>
-                    <option value="">-- Select event --</option>
-                    <option value="Marco Island WL - January 4-10">Marco Island WL - January 4-10</option>
-                    <option value="Cancun WL - Feb 2-8">Cancun WL - Feb 2-8</option>
-                    <option value="San Diego AFU - March 7-10">San Diego AFU - March 7-10</option>
-                    <option value="Denver WL - April 4-10">Denver WL - April 4-10</option>
-                    <option value="Dallas WL - May 10-16">Dallas WL - May 10-16</option>
-                    <option value="Cancun Ten Day - Jun 8-17">Cancun Ten Day - Jun 8-17</option>
-                    <option value="Denver AFU - July 26-29">Denver AFU - July 26-29</option>
-                    <option value="San Diego WL - Aug 22-28">San Diego WL - Aug 22-28</option>
-                    <option value="Copenhagen WL - Sept 20-26">Copenhagen WL - Sept 20-26</option>
-                    <option value="Orlando WL - Oct 25-31">Orlando WL - Oct 25-31</option>
-                    <option value="San Diego WL - Nov 21-27">San Diego WL - Nov 21-27</option>
-                    <option value="Cancun WL - Dec 7-13">Cancun WL - Dec 7-13</option>
-                </select>
-            </div>
-
-            <div class="form-group">
                 <label for="volunteer_id">Select Volunteer *</label>
                 <select id="volunteer_id" name="volunteer_id" required>
                     <option value="">-- Select a volunteer --</option>
@@ -47,25 +28,68 @@
                 <label for="role_performed">Role Performed *</label>
                 <select id="role_performed" name="role_performed" required>
                     <option value="">-- Select role performed --</option>
-                    <optgroup label="Lead Roles">
-                        <option value="Group Lead (GL)">Group Lead (GL)</option>
-                        <option value="Door Lead (DL)">Door Lead (DL)</option>
-                        <option value="Room Reset Lead (RRL)">Room Reset Lead (RRL)</option>
-                        <option value="Medical Lead">Medical Lead</option>
-                        <option value="Healee Support Lead (HSL)">Healee Support Lead (HSL)</option>
-                    </optgroup>
-                    <optgroup label="Team Roles">
-                        <option value="Group Lead Assist (GLA)">Group Lead Assist (GLA)</option>
-                        <option value="Group Greeter (GG)">Group Greeter (GG)</option>
-                        <option value="Door Team">Door Team</option>
-                        <option value="Room Reset (RR)">Room Reset (RR)</option>
-                        <option value="Healee Support Team (HST)">Healee Support Team (HST)</option>
-                    </optgroup>
-                    <optgroup label="Other">
-                        <option value="First Time Volunteer (FTV)">First Time Volunteer (FTV)</option>
-                        <option value="Medical Team">Medical Team</option>
-                    </optgroup>
+                    <option value="GL">GL</option>
+                    <option value="GLA">GLA</option>
+                    <option value="GG">GG</option>
+                    <option value="Doors">Doors</option>
+                    <option value="RR">RR</option>
+                    <option value="HST">HST</option>
+                    <option value="HSL">HSL</option>
+                    <option value="FTVL">FTVL</option>
+                    <option value="Medical">Medical</option>
+                    <option value="Door Lead">Door Lead</option>
+                    <option value="RR Lead">RR Lead</option>
+                    <option value="Medical Lead">Medical Lead</option>
+                    <option value="GC Lead">GC Lead</option>
                 </select>
+            </div>
+
+            <div class="form-group">
+                <label for="event_name">Event Name *</label>
+                <select id="event_name" name="event_name" required>
+                    <option value="">-- Select event --</option>
+                    <option value="WLR">WLR</option>
+                    <option value="AFU">AFU</option>
+                    <option value="Prog">Prog</option>
+                    <option value="10-Day">10-Day</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-half">
+                    <label for="service_month">Month of Service *</label>
+                    <select id="service_month" name="service_month" required>
+                        <option value="">-- Month --</option>
+                        <option value="01">January</option>
+                        <option value="02">February</option>
+                        <option value="03">March</option>
+                        <option value="04">April</option>
+                        <option value="05">May</option>
+                        <option value="06">June</option>
+                        <option value="07">July</option>
+                        <option value="08">August</option>
+                        <option value="09">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+
+                <div class="form-group form-group-half">
+                    <label for="service_year">Year of Service *</label>
+                    <select id="service_year" name="service_year" required>
+                        <option value="">-- Year --</option>
+                        <option value="2030">2030</option>
+                        <option value="2029">2029</option>
+                        <option value="2028">2028</option>
+                        <option value="2027">2027</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                    </select>
+                </div>
             </div>
 
             <div class="form-group">
@@ -128,26 +152,6 @@
                 </div>
             </div>
 
-            <div class="slider-group">
-                <label for="models_the_work">Models the Work * <span class="rating-display">(Current: <output for="models_the_work" class="rating-number">7</output>/10)</span></label>
-                <p class="rating-description">Heart centered, personifies emotional intelligence, example of Dr Joe's teachings</p>
-                <div class="slider-container">
-                    <span class="slider-label">1</span>
-                    <input type="range" name="models_the_work" id="models_the_work" min="1" max="10" value="7" required>
-                    <span class="slider-label">10</span>
-                </div>
-            </div>
-
-            <div class="slider-group">
-                <label for="enthusiasm_to_serve_again">Enthusiasm to Serve Again * <span class="rating-display">(Current: <output for="enthusiasm_to_serve_again" class="rating-number">7</output>/10)</span></label>
-                <p class="rating-description">If given the opportunity, how enthusiastic would you be to serve with this person again?</p>
-                <div class="slider-container">
-                    <span class="slider-label">1</span>
-                    <input type="range" name="enthusiasm_to_serve_again" id="enthusiasm_to_serve_again" min="1" max="10" value="7" required>
-                    <span class="slider-label">10</span>
-                </div>
-            </div>
-
             <!-- Overall Average -->
             <div class="overall-rating">
                 <div class="overall-rating-label">Overall Average:</div>
@@ -181,16 +185,21 @@
 
         <!-- SECTION 3: Qualitative Feedback -->
         <section class="form-section">
-            <h2>Qualitative Feedback (Optional)</h2>
+            <h2>Qualitative Feedback</h2>
 
             <div class="form-group">
-                <label for="strengths">Remarkable Strengths (optional)</label>
+                <label for="strengths">What are this volunteer's key strengths?</label>
                 <textarea id="strengths" name="strengths" rows="2"></textarea>
             </div>
 
             <div class="form-group">
-                <label for="additional_comments">Additional Comments (optional)</label>
-                <textarea id="additional_comments" name="additional_comments" rows="3" placeholder="If you feel there is anything leadership should be made aware of - please note here. For example: This person could be great in ______ role. This person could improve their... I can see this person developing in a leadership role over time..."></textarea>
+                <label for="areas_for_improvement">What areas could this volunteer improve?</label>
+                <textarea id="areas_for_improvement" name="areas_for_improvement" rows="2"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="additional_comments">Additional Comments</label>
+                <textarea id="additional_comments" name="additional_comments" rows="2"></textarea>
             </div>
 
             <div class="form-group">

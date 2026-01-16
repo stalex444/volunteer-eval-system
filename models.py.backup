@@ -137,8 +137,6 @@ class Evaluation(db.Model):
     initiative = db.Column(db.Integer)
     teamwork = db.Column(db.Integer)
     communication = db.Column(db.Integer)
-    models_the_work = db.Column(db.Integer)
-    enthusiasm_to_serve_again = db.Column(db.Integer)
     
     # Qualitative feedback
     strengths = db.Column(db.Text)

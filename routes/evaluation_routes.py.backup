@@ -65,8 +65,6 @@ def submit_evaluation():
             initiative=int(request.form.get('initiative')),
             teamwork=int(request.form.get('teamwork')),
             communication=int(request.form.get('communication')),
-            models_the_work=int(request.form.get('models_the_work', 7)),
-            enthusiasm_to_serve_again=int(request.form.get('enthusiasm_to_serve_again', 7)),
             strengths=request.form.get('strengths'),
             areas_for_improvement=request.form.get('areas_for_improvement'),
             additional_comments=request.form.get('additional_comments'),
